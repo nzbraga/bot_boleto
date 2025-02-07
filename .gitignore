@@ -1,0 +1,5 @@
+.env
+arquivo.xlsx
+src/files/boleto
+tokens
+node_modules
