@@ -2,14 +2,8 @@ const path = require('path'); // Módulo nativo para manipulação de caminhos
 const XLSX = require('xlsx'); // Certifique-se de instalar a biblioteca xlsx
 
 const download_boleto = require('./download_boleto.js');
-const processName = require('./process_name.js');
-const msg_lembrete = require('./msg_lembrete.js')
 const {sendMessage, sendDocument} = require('./venom_bot.js');
-const { time } = require('console');
 const msg_pendencia = require('./msg_pendencia.js');
-
-const outputPath = './src/files/boletos/boleto.pdf';
-//const fileName = "arquivo.xlsx"; // Nome do arquivo na pasta raiz
 
 function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -17,7 +11,7 @@ function timeout(ms) {
 
 async function processExcel(client, fileName) {
 
-    console.log('Iniciando processamento...');
+    console.log('Iniciando PENDENCIA...');
     // Constrói o caminho absoluto para o arquivo na raiz do projeto
     const filePath = path.resolve(__dirname, '../..', fileName);
     console.log('Acessando o arquivo...');
@@ -28,8 +22,7 @@ async function processExcel(client, fileName) {
     console.log('Lendo o arquivo...');
     // Seleciona a primeira planilha
     const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    
+    const sheet = workbook.Sheets[sheetName];    
     
     // Converte a planilha para JSON
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
@@ -47,48 +40,78 @@ async function processExcel(client, fileName) {
             break; // Para o loop se a célula linha[0] estiver vazia
         }
 
+        //reuni os dados do excel
         const raw_nome = linha[columnNames.indexOf('nome')];
         const placa = linha[columnNames.indexOf('placa')];
         const raw_contato = linha[columnNames.indexOf('celular')];
+        const raw_data = linha[columnNames.indexOf('vencimento')];
         const raw_codigo_barras = linha[columnNames.indexOf('boleto')];
         const link = linha[columnNames.indexOf('link')];
-
-        const nome = processName(raw_nome)
+        //const pendencia = linha[columnNames.indexOf('pendencia')];
+        
+        //trata nome e numero de contato
+        const nome = raw_nome.trim().toUpperCase();     
         const contato = `55${raw_contato}@c.us`
 
+        // trata a data do excel
+        const excelSerial =raw_data // Número recebido do Excel
+        const excelEpoch = new Date(1899, 11, 30); // Base do Excel (30/12/1899)
+        const msPerDay = 86400000; // Milissegundos por dia        
+        const data_raw = new Date(excelEpoch.getTime() + excelSerial * msPerDay);// Convertendo para data        
+        const data = data_raw.toLocaleDateString("pt-BR");// Formatando para DD/MM/YYYY
+                
+        const outputPath = `./src/files/boletos/boleto.pdf`;       
+
         const msg = msg_pendencia(nome, placa)
-        //const msg = msg_lembrete(nome, placa)
+        
+        //const msg = `Nome: ${nome}\nPlaca: ${placa}\nData: ${data}`
         const codigo_barras = String(raw_codigo_barras)
 
+        const limite_pendencia = 10
+
+        if (pedencia < limite_pendencia){
+       
+      
         console.log(`Enviando...`)
         try {
+            /*
+            await download_boleto(link, outputPath)
+            .then(async (savedPath) => {
+            console.log( contato, msg)
+            console.log( contato, codigo_barras)
+            console.log( contato, savedPath, "boleto", "")
+        })
+        */
             
             await download_boleto(link, outputPath)
             .then(async (savedPath) => {
                 await timeout(1000);
                 sendMessage(client, contato, msg);
-                
-                // nao enviar na pendencia
-                /*
+                                           
                 await timeout(2000);
                 sendMessage(client, contato, codigo_barras);
-                */
+                
                 await timeout(3000);
-                sendDocument(client, contato, savedPath, "boleto", "");
+                sendDocument(client, contato, savedPath, nome, "");
                 
                 
                 console.log(`Enviado para: ${nome}`)
                 console.log('-------------------------------')
-              
-            })
+            }
+        )
+        
         } catch (err) {
             
-            console.error(`Erro ao baixar o arquivo: ${err.message.to}${err.message.text}`);
-            
-            console.log(`Erro ao Enviar para: ${nome} <<<<<<`)
-            console.log('-----------------------------------')
-          
+        console.error(`Erro ao baixar o arquivo: ${err.message.to}${err.message.text}`);
+        
+        console.log(`Erro ao Enviar para: ${nome} <<<<<<`)
+        console.log('-----------------------------------')
+        
+        }}else{
+            console.log(`pendencia maior que ${limite_pendencia}, pendencia: ${pedencia}`)
         }
+
+
     }
 }
 

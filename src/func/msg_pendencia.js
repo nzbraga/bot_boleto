@@ -1,9 +1,12 @@
 function msg_pendencia(nome, placa ){
     msg = 
-`Boa tarde ${nome} 🌤
+`⚠ VOCÊ ESTÁ DESPROTEGIDO! ⚠ 
+
+Boa tarde ${nome} 🌤
+
 Aqui é a Maiara da APVS 🛡
 
-⚠ Passando para lembrar de um boleto que está pendente
+⚠ Passando para lembrar de um boleto que está pendente a ${tempo_pendente} dias!⚠
  
 🔐  É hora de garantir sua proteção de volta! 😁
 
@@ -11,7 +14,9 @@ Aqui é a Maiara da APVS 🛡
 🚦 PLACA  ➔ ${placa}
 
 
-📄 Se já efetuou o pagamento, desconsidere`
+📄 Se já efetuou o pagamento, desconsidere
+
+🔢 CÓDIGO DE BARRAS :`
 
     return msg
 }

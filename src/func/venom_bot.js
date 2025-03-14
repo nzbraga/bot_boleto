@@ -8,7 +8,7 @@ function initializeClient() {
       venom.create({
         session: 'APVS', //name of session
         multidevice: true, // Add this option to enable multi-device support
-        headless: true, // Add this option to run the browser in headless mode
+        headless: false, // true navegador invisivel / false navegador visivel
       }) // Cria o cliente uma vez
         .then((createdClient) => {
           client = createdClient; // Armazena o cliente para reutilização
@@ -32,10 +32,14 @@ function sendMessage(client, to, message) {
       //console.log('Mensagem enviada com sucesso');
     })
     .catch((error) => {
-      console.error('Erro ao enviar mensagem:', error);
+      console.error('Erro ao enviar a mensagem:', {
+        to: error.to,
+        erro: error.erro,
+        text: error.text,
+        status: error.status
+      })
     });
 }
-
 function sendDocument(client, to, filePath, fileName, caption) {
   client
     .sendFile(to, filePath, fileName, caption) // Envia o arquivo
@@ -43,7 +47,13 @@ function sendDocument(client, to, filePath, fileName, caption) {
      // console.log('Documento enviado com sucesso');
     })
     .catch((error) => {
-      console.error('Erro ao enviar o documento:', error);
+      console.error('Erro ao enviar o documento:', {
+        to: error.to,
+        erro: error.erro,
+        text: error.text,
+        status: error.status
+      });
+      
     });
 }
 

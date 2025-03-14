@@ -1,4 +1,4 @@
-function msg_lembrete(nome, placa ){
+function msg_lembrete(nome, placa, vencimento){
     msg = 
 `Boa tarde ${nome} 🌟
     
@@ -9,9 +9,11 @@ Simplificando as coisas para você! 😁
 
 ⬇ Por favor, confira os detalhes abaixo com atenção ⬇
 
+➔ VENCIMENTO: ${vencimento}
+
 🚦 PLACA ➔ ${placa}
 
-🔢 CÓDIGO DE BARRAS `
+🔢 CÓDIGO DE BARRAS :`
 
     return msg
 }

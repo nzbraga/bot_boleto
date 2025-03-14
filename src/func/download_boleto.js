@@ -8,7 +8,7 @@ const path = require('path');
  * @param {string} outputPath - O caminho completo onde o arquivo será salvo.
  * @returns {Promise<string>} - Uma Promise que resolve com o caminho do arquivo salvo.
  */
-async function download_boleto(url, outputPath) {
+async function download_boleto(url, outputPath, nome) {
   return new Promise((resolve, reject) => {
     const file = fs.createWriteStream(outputPath);
 
